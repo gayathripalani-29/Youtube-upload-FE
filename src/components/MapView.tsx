@@ -133,21 +133,40 @@ export const MapView: React.FC = () => {
       const isSelected = selectedProperty?.id === property.id;
       const isNewlyAdded = newlyAddedPropertyId === property.id;
 
+      const beaconColor = isNewlyAdded ? 'beacon-emerald' : 'beacon-blue';
+      const beaconMode = (isNewlyAdded || isSelected) ? 'beacon-always' : 'beacon-on-hover';
+      const dotPingColor = isNewlyAdded ? 'bg-emerald-300' : 'bg-sky-300';
+      const dotCoreColor = isNewlyAdded ? 'bg-emerald-200' : 'bg-white';
+      const isPingActive = isNewlyAdded || isSelected;
+
       const markerHtml = `
-        <div class="property-pill-marker ${isSelected ? 'active' : ''} ${isNewlyAdded ? 'new-marker' : ''}" 
-             data-id="${property.id}">
-          <span class="flex items-center gap-1">
-            ${isNewlyAdded ? '<span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>' : ''}
-            <span>${property.price}</span>
-          </span>
+        <div class="custom-marker-container group" data-id="${property.id}">
+          <!-- Radar beacon on ground coordinate: Always active for new/selected, animated on HOVER for ALL markers! -->
+          <div class="radar-beacon-container ${beaconColor} ${beaconMode}">
+            <span class="beacon-wave beacon-wave-1"></span>
+            <span class="beacon-wave beacon-wave-2"></span>
+            <span class="beacon-core"></span>
+          </div>
+
+          <div class="property-pill-marker ${isSelected ? 'active' : ''} ${isNewlyAdded ? 'new-marker' : ''}" 
+               data-id="${property.id}">
+            <span class="flex items-center gap-1.5">
+              <!-- Live Animated Dot: Active on HOVER for all markers, continuous for new/selected! -->
+              <span class="marker-dot-wrapper">
+                <span class="marker-dot-ping ${dotPingColor} ${isPingActive ? 'ping-active' : ''}"></span>
+                <span class="marker-dot-core ${dotCoreColor}"></span>
+              </span>
+              <span>${property.price}</span>
+            </span>
+          </div>
         </div>
       `;
 
       const customIcon = L.divIcon({
         html: markerHtml,
         className: 'custom-leaflet-marker',
-        iconSize: [85, 34],
-        iconAnchor: [42, 34],
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
       });
 
       if (markersRef.current[property.id]) {
@@ -168,6 +187,14 @@ export const MapView: React.FC = () => {
           direction: 'top',
           offset: [0, -32],
           opacity: 0.95,
+        });
+
+        marker.on('mouseover', () => {
+          marker.setZIndexOffset(1000);
+        });
+
+        marker.on('mouseout', () => {
+          marker.setZIndexOffset(isSelected ? 500 : 0);
         });
 
         marker.on('click', () => {
@@ -361,8 +388,11 @@ export const MapView: React.FC = () => {
             <span>Verified Property</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 border border-white"></span>
-            <span>New Submission</span>
+            <span className="relative flex h-2.5 w-2.5 items-center justify-center">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-80"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span>Plotted (Radar Dot)</span>
           </div>
           <div className="flex items-center gap-1.5 text-blue-600 font-semibold">
             <Video className="w-3 h-3" />
