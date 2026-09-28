@@ -24,7 +24,10 @@ export const Header: React.FC = () => {
     setIsFilterOpen, 
     activeFilterCount, 
     setMapCenterAndZoom,
-    filteredProperties 
+    filteredProperties,
+    isPickingLocation,
+    startSellFlow,
+    cancelLocationPicker 
   } = useProperties();
 
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -179,21 +182,28 @@ export const Header: React.FC = () => {
               <span className="hidden md:inline">{isAdminPage ? 'View Map' : 'Admin'}</span>
             </button>
 
-            {/* Sell Your Property CTA */}
-            {!isSellPage ? (
+            {/* Sell Your Property CTA Trigger */}
+            {isPickingLocation ? (
               <button
-                onClick={() => navigate('/sell')}
-                className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/30 transition-all hover:-translate-y-0.5"
+                onClick={cancelLocationPicker}
+                className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-amber-500 hover:bg-amber-600 active:scale-95 text-white shadow-md shadow-amber-500/25 transition-all cursor-pointer animate-pulse"
+                title="Click to cancel location selection"
               >
-                <Plus className="w-4 h-4 stroke-[2.5]" />
-                <span>Sell Property</span>
+                <MapPin className="w-4 h-4 stroke-[2.5]" />
+                <span>Marking on Map... (Cancel)</span>
               </button>
             ) : (
               <button
-                onClick={() => navigate('/')}
-                className="text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2 rounded-xl hover:bg-slate-100 transition-colors"
+                onClick={() => {
+                  if (location.pathname !== '/') {
+                    navigate('/');
+                  }
+                  startSellFlow();
+                }}
+                className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/35 transition-all hover:-translate-y-0.5 cursor-pointer"
               >
-                Back to Map
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+                <span>Sell Property</span>
               </button>
             )}
           </div>

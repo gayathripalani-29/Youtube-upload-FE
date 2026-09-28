@@ -74,17 +74,22 @@ export interface SellFormData {
   videoFileSize: string;
   videoThumbnail: string;
   youtubeId: string;
+  youtubeUrlInput?: string;
 
   // Step 3: Details
   title: string;
   category: PropertyCategory;
   priceValue: string;
   priceUnit: PriceUnit;
+  negotiable?: boolean;
   ownerName: string;
   contactNumber: string;
   description: string;
   areaSqFt: string;
   bhk: string;
+  bathrooms?: number;
+  furnishing?: 'Unfurnished' | 'Semi-Furnished' | 'Fully Furnished';
+  facing?: string;
   propertyThumbnail: string;
 }
 
