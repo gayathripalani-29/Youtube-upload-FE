@@ -11,6 +11,15 @@ interface PropertyContextType {
   setActiveVideoProperty: (prop: Property | null) => void;
   isFilterOpen: boolean;
   setIsFilterOpen: (open: boolean) => void;
+  isSellModalOpen: boolean;
+  setIsSellModalOpen: (open: boolean) => void;
+  isPickingLocation: boolean;
+  setIsPickingLocation: (picking: boolean) => void;
+  pickedLocation: { latitude: number; longitude: number; locationName: string; landmark?: string; pincode?: string } | null;
+  setPickedLocation: React.Dispatch<React.SetStateAction<{ latitude: number; longitude: number; locationName: string; landmark?: string; pincode?: string } | null>>;
+  startSellFlow: () => void;
+  confirmPickedLocation: () => void;
+  cancelLocationPicker: () => void;
   filterState: FilterState;
   setFilterState: React.Dispatch<React.SetStateAction<FilterState>>;
   resetFilters: () => void;
@@ -45,6 +54,15 @@ export const PropertyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [activeVideoProperty, setActiveVideoProperty] = useState<Property | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isSellModalOpen, setIsSellModalOpen] = useState(false);
+  const [isPickingLocation, setIsPickingLocation] = useState(false);
+  const [pickedLocation, setPickedLocation] = useState<{ latitude: number; longitude: number; locationName: string; landmark?: string; pincode?: string } | null>({
+    latitude: 13.0827,
+    longitude: 80.2707,
+    locationName: 'Anna Nagar, Chennai',
+    landmark: 'Near Tower Park',
+    pincode: '600040',
+  });
   const [filterState, setFilterState] = useState<FilterState>(DEFAULT_FILTERS);
   const [searchQuery, setSearchQuery] = useState('');
   const [mapCenter, setMapCenter] = useState<[number, number]>([13.0334, 80.2326]); // Central Chennai
@@ -120,6 +138,32 @@ export const PropertyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
   }, [addToast, selectedProperty]);
 
+  const startSellFlow = useCallback(() => {
+    setIsPickingLocation(true);
+    setSelectedProperty(null);
+    setIsFilterOpen(false);
+    setIsSellModalOpen(false);
+    addToast({
+      type: 'info',
+      title: 'Pin Location on Map',
+      message: 'Click anywhere on the map or drag the pin to mark your property, then click Confirm.'
+    });
+  }, [addToast, setSelectedProperty, setIsFilterOpen, setIsSellModalOpen]);
+
+  const confirmPickedLocation = useCallback(() => {
+    setIsPickingLocation(false);
+    setIsSellModalOpen(true);
+    addToast({
+      type: 'success',
+      title: 'Location Marked',
+      message: 'Now complete property values, price & video walkthrough.'
+    });
+  }, [addToast]);
+
+  const cancelLocationPicker = useCallback(() => {
+    setIsPickingLocation(false);
+  }, []);
+
   // Dynamic filtering
   const filteredProperties = useMemo(() => {
     return properties.filter(item => {
@@ -187,6 +231,15 @@ export const PropertyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setActiveVideoProperty,
         isFilterOpen,
         setIsFilterOpen,
+        isSellModalOpen,
+        setIsSellModalOpen,
+        isPickingLocation,
+        setIsPickingLocation,
+        pickedLocation,
+        setPickedLocation,
+        startSellFlow,
+        confirmPickedLocation,
+        cancelLocationPicker,
         filterState,
         setFilterState,
         resetFilters,
