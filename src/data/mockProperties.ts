@@ -1,0 +1,441 @@
+import { Property } from '../types/property';
+
+export const INITIAL_PROPERTIES: Property[] = [
+  {
+    id: "HS-001",
+    title: "Modern Luxury Villa",
+    category: "Villa for Sale",
+    price: "₹1.85 Cr",
+    priceAmount: 185, // 185 Lakhs = 1.85 Cr
+    owner: "Arun Kumar",
+    phone: "+91 98765 43210",
+    email: "arun.kumar@gmail.com",
+    location: "Alwarpet, Chennai",
+    area: "Alwarpet",
+    address: "Plot 42, Poes Garden Extension, Alwarpet, Chennai - 600018",
+    latitude: 13.0334,
+    longitude: 80.2526,
+    thumbnail: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1082",
+    videoDuration: "3:45",
+    videoTitle: "Exclusive Walkthrough: 4 BHK Italian Marble Villa in Alwarpet",
+    videoViews: "4.8K views",
+    description: "Spacious independent 4-BHK architectural villa featuring premium Italian marble flooring, imported teak woodwork, private terrace garden with pergola, and modular German kitchen. Located in a secure tree-lined avenue close to premier schools and clubs.",
+    specs: {
+      bhk: "4 BHK",
+      bathrooms: 5,
+      areaSqFt: 3450,
+      facing: "North-East",
+      furnishing: "Fully Furnished",
+      possession: "Ready to Move",
+      reraApproved: true
+    },
+    status: "Published",
+    uploadedAt: "2026-09-24T10:00:00Z", // 4 days ago (within 1 week)
+    isFeatured: true
+  },
+  {
+    id: "HS-002",
+    title: "Premium Apartment",
+    category: "Flat for Sale",
+    price: "₹92 Lakh",
+    priceAmount: 92,
+    owner: "Senthil Nathan",
+    phone: "+91 94441 23456",
+    email: "senthil.n@outlook.com",
+    location: "Anna Nagar West, Chennai",
+    area: "Anna Nagar",
+    address: "Tower B, Sapphire Residency, 2nd Avenue, Anna Nagar, Chennai - 600040",
+    latitude: 13.0850,
+    longitude: 80.2101,
+    thumbnail: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1083",
+    videoDuration: "2:30",
+    videoTitle: "Modern 3 BHK Tour with Club Amenities | Anna Nagar",
+    videoViews: "3.2K views",
+    description: "Well-ventilated 3 BHK high-rise flat on the 7th floor overlooking Tower Park. Features 100% Vastu compliance, covered double car parking, piped gas connection, swimming pool, clubhouse, and 24x7 treated water supply.",
+    specs: {
+      bhk: "3 BHK",
+      bathrooms: 3,
+      areaSqFt: 1680,
+      facing: "East",
+      furnishing: "Semi-Furnished",
+      possession: "Ready to Move",
+      reraApproved: true
+    },
+    status: "Published",
+    uploadedAt: "2026-09-22T14:30:00Z", // 6 days ago (within 1 week)
+    isFeatured: true
+  },
+  {
+    id: "HS-003",
+    title: "Residential Plot in IT Corridor",
+    category: "Plot for Sale",
+    price: "₹68 Lakh",
+    priceAmount: 68,
+    owner: "Vigneshwaran R.",
+    phone: "+91 97890 54321",
+    location: "OMR - Navalur, Chennai",
+    area: "OMR",
+    address: "Greenwood Enclave, Near AGS Cinemas, OMR, Chennai - 603103",
+    latitude: 12.8458,
+    longitude: 80.2269,
+    thumbnail: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1524813686514-a57563d77d66?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1084",
+    videoDuration: "1:55",
+    videoTitle: "CMDA & RERA Approved Villa Plot Drone Tour | OMR Navalur",
+    videoViews: "1.9K views",
+    description: "Clear title CMDA approved residential villa plot located in a fast-appreciating gated community behind SIPCOT IT Park. Features 40-ft wide blacktop internal roads, underground electrical cabling, street lighting, and clear sweet groundwater at 25 feet.",
+    specs: {
+      areaSqFt: 2400,
+      facing: "North",
+      reraApproved: true
+    },
+    status: "Published",
+    uploadedAt: "2026-09-10T09:15:00Z", // ~2.5 weeks ago (within 1 month)
+    isFeatured: false
+  },
+  {
+    id: "HS-004",
+    title: "Independent House",
+    category: "House for Sale",
+    price: "₹1.45 Cr",
+    priceAmount: 145,
+    owner: "Kavitha Rajan",
+    phone: "+91 98402 87654",
+    email: "kavitha.rajan@yahoo.com",
+    location: "Adyar, Chennai",
+    area: "Adyar",
+    address: "14 Gandhi Nagar 3rd Main Road, Adyar, Chennai - 600020",
+    latitude: 13.0067,
+    longitude: 80.2570,
+    thumbnail: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1085",
+    videoDuration: "4:10",
+    videoTitle: "Charming Ground+1 Independent Home in Adyar with Garden",
+    videoViews: "5.1K views",
+    description: "Charming independent two-storey bungalow located in prime quiet residential pocket of Adyar. Features ground-floor master suite, landscaped courtyard, solar water heating, separate servant quarters, and borewell + metro water connections.",
+    specs: {
+      bhk: "3 BHK",
+      bathrooms: 4,
+      areaSqFt: 2800,
+      facing: "South-East",
+      furnishing: "Semi-Furnished",
+      possession: "Ready to Move",
+      reraApproved: true
+    },
+    status: "Published",
+    uploadedAt: "2026-09-02T11:20:00Z", // within 1 month
+    isFeatured: true
+  },
+  {
+    id: "HS-005",
+    title: "Commercial Property",
+    category: "Commercial Property",
+    price: "₹3.20 Cr",
+    priceAmount: 320,
+    owner: "M. Balaji Rao",
+    phone: "+91 99620 11223",
+    email: "balaji.enterprises@gmail.com",
+    location: "Guindy Industrial Estate, Chennai",
+    area: "Guindy",
+    address: "Plot 88, CIPET Road, Guindy, Chennai - 600032",
+    latitude: 13.0067,
+    longitude: 80.2033,
+    thumbnail: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1086",
+    videoDuration: "3:15",
+    videoTitle: "Ready IT / Office Space with 120 Workstations | Guindy",
+    videoViews: "6.4K views",
+    description: "Grade-A plug-and-play commercial office building close to Guindy Metro & Railway Station. Fitted with 120 workstations, 4 executive conference rooms, cafeteria, 100% DG backup, VRV air conditioning, and basement parking for 18 cars.",
+    specs: {
+      areaSqFt: 6200,
+      facing: "North",
+      furnishing: "Fully Furnished",
+      possession: "Ready to Move",
+      reraApproved: true
+    },
+    status: "Published",
+    uploadedAt: "2026-08-15T08:00:00Z", // within 6 months
+    isFeatured: true
+  },
+  {
+    id: "HS-006",
+    title: "Land for Development",
+    category: "Land for Development",
+    price: "₹2.10 Cr",
+    priceAmount: 210,
+    owner: "Dharmalingam Chettiar",
+    phone: "+91 98410 99887",
+    location: "Tambaram West, Chennai",
+    area: "Tambaram",
+    address: "Survey 142/2, Mudichur Road, Tambaram, Chennai - 600045",
+    latitude: 12.9249,
+    longitude: 80.1000,
+    thumbnail: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1087",
+    videoDuration: "2:05",
+    videoTitle: "Prime 1.2 Acre Development Land on 60ft Road | Tambaram",
+    videoViews: "2.3K views",
+    description: "6 Grounds (14,400 sq.ft) prime commercial-cum-residential development land with 85 feet frontage on Mudichur 60ft Main Road. Excellent FSI potential, ideal for multi-storey apartments, hospital, or commercial complex.",
+    specs: {
+      areaSqFt: 14400,
+      facing: "East",
+      reraApproved: true
+    },
+    status: "Published",
+    uploadedAt: "2026-07-20T16:00:00Z", // within 6 months
+    isFeatured: false
+  },
+  {
+    id: "HS-007",
+    title: "Sea-Facing Luxury Penthouse",
+    category: "Flat for Sale",
+    price: "₹2.95 Cr",
+    priceAmount: 295,
+    owner: "Pooja Radhakrishnan",
+    phone: "+91 98840 65432",
+    email: "pooja.radha@gmail.com",
+    location: "Besant Nagar, Chennai",
+    area: "Besant Nagar",
+    address: "Oceanic Heights, 4th Seaward Road, Valmiki Nagar, Chennai - 600041",
+    latitude: 12.9982,
+    longitude: 80.2664,
+    thumbnail: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1088",
+    videoDuration: "3:50",
+    videoTitle: "Unobstructed Bay of Bengal View Penthouse Walkthrough",
+    videoViews: "7.9K views",
+    description: "Breathtaking top-floor penthouse with 180-degree unobstructed views of Elliot's Beach and the Bay of Bengal. Boasts an infinity plunge pool, automated smart home automation, soundproof double-glazed German windows, and private elevator access.",
+    specs: {
+      bhk: "4 BHK",
+      bathrooms: 4,
+      areaSqFt: 3900,
+      facing: "East",
+      furnishing: "Fully Furnished",
+      possession: "Ready to Move",
+      reraApproved: true
+    },
+    status: "Published",
+    uploadedAt: "2026-09-26T12:00:00Z", // 2 days ago (within 1 week)
+    isFeatured: true
+  },
+  {
+    id: "HS-008",
+    title: "Gated Community Luxury Villa",
+    category: "Villa for Sale",
+    price: "₹2.25 Cr",
+    priceAmount: 225,
+    owner: "Karthik Sundaram",
+    phone: "+91 97911 34567",
+    location: "ECR - Injambakkam, Chennai",
+    area: "ECR",
+    address: "Palm Meadows Community, Sea Shell Avenue, ECR, Chennai - 600115",
+    latitude: 12.9189,
+    longitude: 80.2520,
+    thumbnail: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1089",
+    videoDuration: "4:00",
+    videoTitle: "Resort Style Coastal Villa Tour | ECR Injambakkam",
+    videoViews: "3.7K views",
+    description: "Ultra-luxury Balinese style villa set within an exclusive 8-acre gated community just 300 meters from the beach. Amenities include clubhouse, tennis court, heated swimming pool, 24-hr security patrol, and lush tropical landscaping.",
+    specs: {
+      bhk: "4 BHK",
+      bathrooms: 4,
+      areaSqFt: 3600,
+      facing: "East",
+      furnishing: "Fully Furnished",
+      possession: "Ready to Move",
+      reraApproved: true
+    },
+    status: "Published",
+    uploadedAt: "2026-09-18T15:20:00Z", // within 1 month
+    isFeatured: true
+  },
+  {
+    id: "HS-009",
+    title: "Smart Gated Apartment",
+    category: "Gated Apartment",
+    price: "₹76 Lakh",
+    priceAmount: 76,
+    owner: "Meenakshi Sundaram",
+    phone: "+91 98409 11990",
+    location: "Velachery, Chennai",
+    area: "Velachery",
+    address: "Block C, Metro Breeze, Velachery Bypass Road, Chennai - 600042",
+    latitude: 12.9815,
+    longitude: 80.2180,
+    thumbnail: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1090",
+    videoDuration: "2:40",
+    videoTitle: "Cozy 2.5 BHK Apartment with High Rental Yield | Velachery",
+    videoViews: "2.1K views",
+    description: "Prime investment property situated 5 mins from Phoenix MarketCity and Velachery MRTS. Includes clubhouse with badminton court, gymnasium, solar-powered common lighting, and RO purified water plant.",
+    specs: {
+      bhk: "2.5 BHK",
+      bathrooms: 2,
+      areaSqFt: 1240,
+      facing: "North",
+      furnishing: "Semi-Furnished",
+      possession: "Ready to Move",
+      reraApproved: true
+    },
+    status: "Published",
+    uploadedAt: "2026-09-08T10:10:00Z", // within 1 month
+    isFeatured: false
+  },
+  {
+    id: "HS-010",
+    title: "Heritage Bungalow & Land",
+    category: "House for Sale",
+    price: "₹4.50 Cr",
+    priceAmount: 450,
+    owner: "Dr. Ramanathan S.",
+    phone: "+91 98414 77665",
+    location: "Nungambakkam, Chennai",
+    area: "Nungambakkam",
+    address: "Sterling Road 4th Cross, Nungambakkam, Chennai - 600034",
+    latitude: 13.0594,
+    longitude: 80.2435,
+    thumbnail: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1091",
+    videoDuration: "5:12",
+    videoTitle: "Rare Colonial Style Estate on 4 Grounds in Central Nungambakkam",
+    videoViews: "8.5K views",
+    description: "Prestigious central Chennai colonial bungalow situated on 4.2 Grounds of land. Majestic high ceilings, Burma teak rafters, wide verandahs, and expansive shaded mango tree garden. Suitable for high-net-worth residence, consulate, or boutique corporate headquarters.",
+    specs: {
+      bhk: "5 BHK",
+      bathrooms: 5,
+      areaSqFt: 5200,
+      facing: "East",
+      furnishing: "Semi-Furnished",
+      possession: "Ready to Move",
+      reraApproved: true
+    },
+    status: "Published",
+    uploadedAt: "2026-06-12T10:00:00Z",
+    isFeatured: true
+  },
+  {
+    id: "HS-011",
+    title: "Corner Plot in Tech Enclave",
+    category: "Plot for Sale",
+    price: "₹52 Lakh",
+    priceAmount: 52,
+    owner: "V. Anand",
+    phone: "+91 97908 65421",
+    location: "Perungudi, Chennai",
+    area: "Perungudi",
+    address: "OMR Toll Gate Road, Perungudi, Chennai - 600096",
+    latitude: 12.9654,
+    longitude: 80.2407,
+    thumbnail: "https://images.unsplash.com/photo-1524813686514-a57563d77d66?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1524813686514-a57563d77d66?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1092",
+    videoDuration: "1:40",
+    videoTitle: "Perungudi Corner Plot Quick Video Overview",
+    videoViews: "1.4K views",
+    description: "North-East corner residential plot measuring 1800 sq.ft within an established colony with sweet ground water, corporation water lines, and close proximity to World Trade Center Perungudi.",
+    specs: {
+      areaSqFt: 1800,
+      facing: "North-East",
+      reraApproved: true
+    },
+    status: "Draft",
+    uploadedAt: "2026-09-27T08:00:00Z",
+    isFeatured: false
+  },
+  {
+    id: "HS-012",
+    title: "Luxury High-Rise in T. Nagar",
+    category: "Gated Apartment",
+    price: "₹1.65 Cr",
+    priceAmount: 165,
+    owner: "Deepa Natarajan",
+    phone: "+91 98400 33445",
+    location: "T. Nagar, Chennai",
+    area: "T. Nagar",
+    address: "Venkatnarayana Road, T. Nagar, Chennai - 600017",
+    latitude: 13.0418,
+    longitude: 80.2342,
+    thumbnail: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80"
+    ],
+    videoId: "HS-YT-1093",
+    videoDuration: "2:55",
+    videoTitle: "Exclusive 3 BHK Living in Central T. Nagar",
+    videoViews: "4.1K views",
+    description: "Opulent 3 BHK flat in prime retail corridor of T. Nagar. Features Italian sanitaryware, sound insulating glass, central VRF conditioning, 2 dedicated covered car parks, and automated access control.",
+    specs: {
+      bhk: "3 BHK",
+      bathrooms: 3,
+      areaSqFt: 2150,
+      facing: "East",
+      furnishing: "Fully Furnished",
+      possession: "Ready to Move",
+      reraApproved: true
+    },
+    status: "Pending",
+    uploadedAt: "2026-09-25T11:45:00Z",
+    isFeatured: false
+  }
+];
+
+export const CHENNAI_HOTSPOTS = [
+  { name: "All Locations", lat: 13.0334, lng: 80.2326, zoom: 12 },
+  { name: "Anna Nagar", lat: 13.0850, lng: 80.2101, zoom: 14 },
+  { name: "Adyar", lat: 13.0067, lng: 80.2570, zoom: 14 },
+  { name: "OMR (IT Corridor)", lat: 12.8758, lng: 80.2269, zoom: 13 },
+  { name: "Guindy", lat: 13.0067, lng: 80.2033, zoom: 14 },
+  { name: "Tambaram", lat: 12.9249, lng: 80.1000, zoom: 13 },
+  { name: "Besant Nagar", lat: 12.9982, lng: 80.2664, zoom: 14 },
+  { name: "ECR (East Coast Road)", lat: 12.9189, lng: 80.2520, zoom: 13 },
+  { name: "Nungambakkam", lat: 13.0594, lng: 80.2435, zoom: 14 },
+  { name: "Velachery", lat: 12.9815, lng: 80.2180, zoom: 14 },
+  { name: "T. Nagar", lat: 13.0418, lng: 80.2342, zoom: 14 }
+];

@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+}
+
+/* Custom Scrollbar for drawers and lists */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Custom Leaflet Map styling */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  background-color: #f1f5f9;
+  z-index: 10;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 4px 14px 0 rgba(15, 23, 42, 0.12) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  transition: all 0.15s ease;
+}
+
+.leaflet-control-zoom-in:hover,
+.leaflet-control-zoom-out:hover {
+  background-color: #f8fafc !important;
+  color: #1d4ed8 !important;
+}
+
+.leaflet-control-attribution {
+  font-size: 10px !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(4px);
+  padding: 2px 6px !important;
+  border-radius: 4px 0 0 0;
+}
+
+/* Custom Property Price Marker inside Leaflet */
+.custom-leaflet-marker {
+  background: transparent;
+  border: none;
+}
+
+.property-pill-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #1e3a8a;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.28);
+  border: 2px solid #ffffff;
+  white-space: nowrap;
+  cursor: pointer;
+  transform-origin: center bottom;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.property-pill-marker::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1e3a8a;
+}
+
+.property-pill-marker:hover,
+.property-pill-marker.active {
+  background: #2563eb;
+  transform: scale(1.12) translateY(-4px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.45);
+  z-index: 1000 !important;
+}
+
+.property-pill-marker:hover::after,
+.property-pill-marker.active::after {
+  border-top-color: #2563eb;
+}
+
+.property-pill-marker.new-marker {
+  background: #059669;
+  border-color: #ecfdf5;
+  animation: pulseSubtle 1.8s infinite;
+}
+
+.property-pill-marker.new-marker::after {
+  border-top-color: #059669;
+}
+
+/* Pin Selector for Sell Property */
+.custom-picker-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -100%);
+  cursor: grab;
+  filter: drop-shadow(0 6px 12px rgba(15, 23, 42, 0.35));
+}
