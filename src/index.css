@@ -82,6 +82,7 @@
 .custom-leaflet-marker {
   background: transparent !important;
   border: none !important;
+  overflow: visible !important;
 }
 
 .custom-marker-container {
