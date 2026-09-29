@@ -21,6 +21,7 @@ export const MapView: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersRef = useRef<{ [key: string]: L.Marker }>({});
+  const markerLayerGroupRef = useRef<L.LayerGroup | null>(null);
   const pickerMarkerRef = useRef<L.Marker | null>(null);
 
   const { 
@@ -72,9 +73,16 @@ export const MapView: React.FC = () => {
 
   // Initialize Map
   useEffect(() => {
-    if (!mapContainerRef.current || mapInstanceRef.current) return;
+    if (!mapContainerRef.current) return;
+    if (mapInstanceRef.current) return;
 
-    const map = L.map(mapContainerRef.current, {
+    // Reset any lingering Leaflet ID on the DOM container (prevents StrictMode crashes)
+    const container = mapContainerRef.current as HTMLElement & { _leaflet_id?: number | null };
+    if (container._leaflet_id) {
+      container._leaflet_id = null;
+    }
+
+    const map = L.map(container, {
       center: mapCenter,
       zoom: mapZoom,
       zoomControl: false,
@@ -86,15 +94,39 @@ export const MapView: React.FC = () => {
     const layer = L.tileLayer(TILE_URLS[mapStyle], {
       attribution: ATTRIBUTIONS[mapStyle],
       maxZoom: 19,
-      subdomains: 'abcd',
     }).addTo(map);
 
     tileLayerRef.current = layer;
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
+    // Dedicated layer group for all property markers
+    const layerGroup = L.layerGroup().addTo(map);
+    markerLayerGroupRef.current = layerGroup;
+
     mapInstanceRef.current = map;
 
+    // Invalidate size once DOM layout is settled
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 150);
+
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+    resizeObserver.observe(container);
+
     return () => {
+      clearTimeout(timer);
+      resizeObserver.disconnect();
+      if (markerLayerGroupRef.current) {
+        markerLayerGroupRef.current.clearLayers();
+        markerLayerGroupRef.current = null;
+      }
+      markersRef.current = {};
+      if (pickerMarkerRef.current) {
+        pickerMarkerRef.current.remove();
+        pickerMarkerRef.current = null;
+      }
       map.remove();
       mapInstanceRef.current = null;
     };
@@ -120,15 +152,15 @@ export const MapView: React.FC = () => {
     const map = mapInstanceRef.current;
     if (!map) return;
 
-    // Remove old markers that are no longer in filtered list
-    Object.keys(markersRef.current).forEach((id) => {
-      if (!filteredProperties.find((p) => p.id === id)) {
-        markersRef.current[id].remove();
-        delete markersRef.current[id];
-      }
-    });
+    // Ensure marker layer group exists on the active map instance
+    if (!markerLayerGroupRef.current || !map.hasLayer(markerLayerGroupRef.current)) {
+      markerLayerGroupRef.current = L.layerGroup().addTo(map);
+    }
 
-    // Add or update markers
+    const layerGroup = markerLayerGroupRef.current;
+    layerGroup.clearLayers();
+    markersRef.current = {};
+
     filteredProperties.forEach((property: Property) => {
       const isSelected = selectedProperty?.id === property.id;
       const isNewlyAdded = newlyAddedPropertyId === property.id;
@@ -169,42 +201,39 @@ export const MapView: React.FC = () => {
         iconAnchor: [0, 0],
       });
 
-      if (markersRef.current[property.id]) {
-        markersRef.current[property.id].setIcon(customIcon);
-        markersRef.current[property.id].setLatLng([property.latitude, property.longitude]);
-      } else {
-        const marker = L.marker([property.latitude, property.longitude], {
-          icon: customIcon,
-          riseOnHover: true,
-        }).addTo(map);
+      const marker = L.marker([property.latitude, property.longitude], {
+        icon: customIcon,
+        riseOnHover: true,
+      });
 
-        marker.bindTooltip(`
-          <div class="p-1 font-sans text-xs">
-            <p class="font-bold text-slate-900">${property.title}</p>
-            <p class="text-blue-600 font-semibold">${property.price} &bull; ${property.area}</p>
-          </div>
-        `, {
-          direction: 'top',
-          offset: [0, -32],
-          opacity: 0.95,
-        });
+      marker.bindTooltip(`
+        <div class="p-1 font-sans text-xs">
+          <p class="font-bold text-slate-900">${property.title}</p>
+          <p class="text-blue-600 font-semibold">${property.price} &bull; ${property.area}</p>
+        </div>
+      `, {
+        direction: 'top',
+        offset: [0, -32],
+        opacity: 0.95,
+      });
 
-        marker.on('mouseover', () => {
-          marker.setZIndexOffset(1000);
-        });
+      marker.on('mouseover', () => {
+        marker.setZIndexOffset(1000);
+      });
 
-        marker.on('mouseout', () => {
-          marker.setZIndexOffset(isSelected ? 500 : 0);
-        });
+      marker.on('mouseout', () => {
+        marker.setZIndexOffset(isSelected ? 500 : 0);
+      });
 
-        marker.on('click', () => {
-          if (isPickingLocation) return;
-          setSelectedProperty(property);
-          map.flyTo([property.latitude, property.longitude], 15, { duration: 0.8 });
-        });
+      marker.on('click', (e) => {
+        L.DomEvent.stopPropagation(e);
+        if (isPickingLocation) return;
+        setSelectedProperty(property);
+        map.flyTo([property.latitude, property.longitude], 15, { duration: 0.8 });
+      });
 
-        markersRef.current[property.id] = marker;
-      }
+      marker.addTo(layerGroup);
+      markersRef.current[property.id] = marker;
     });
   }, [filteredProperties, selectedProperty, newlyAddedPropertyId, setSelectedProperty, isPickingLocation]);
 
@@ -241,6 +270,10 @@ export const MapView: React.FC = () => {
       iconSize: [140, 56],
       iconAnchor: [70, 52],
     });
+
+    if (pickerMarkerRef.current && !map.hasLayer(pickerMarkerRef.current)) {
+      pickerMarkerRef.current = null;
+    }
 
     if (!pickerMarkerRef.current) {
       const marker = L.marker([initialLat, initialLng], {
