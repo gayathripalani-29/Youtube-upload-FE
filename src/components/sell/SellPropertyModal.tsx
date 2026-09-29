@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Building2, Sparkles, AlertTriangle } from 'lucide-react';
+import { X, Building2, AlertTriangle, Sparkles } from 'lucide-react';
 import { Stepper } from './Stepper';
 import { Step1Location } from './Step1Location';
 import { Step2Video } from './Step2Video';
@@ -92,7 +92,6 @@ export const SellPropertyModal: React.FC = () => {
   const handleForceClose = () => {
     setShowConfirmClose(false);
     setIsSellModalOpen(false);
-    // Reset if was at final success
     if (currentStep === 5) {
       setCurrentStep(1);
       setFormData(INITIAL_FORM_DATA);
@@ -179,50 +178,60 @@ export const SellPropertyModal: React.FC = () => {
       {/* Dark Blurred Backdrop */}
       <div 
         onClick={handleRequestClose}
-        className="fixed inset-0 bg-slate-950/75 backdrop-blur-md transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-slate-950/70 backdrop-blur-md transition-opacity animate-fade-in"
       />
 
-      {/* Main Popup Modal Window */}
-      <div className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200/90 z-10 animate-modal-pop flex flex-col h-[90vh] sm:h-[86vh] max-h-[820px]">
+      {/* Main Studio Modal Window */}
+      <div className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200/90 z-10 animate-modal-pop flex flex-col h-[92vh] sm:h-[88vh] max-h-[840px]">
         
-        {/* Modal Top Navigation Bar */}
-        <div className="flex items-center justify-between px-5 sm:px-6 py-3.5 bg-white border-b border-slate-200/80 text-slate-900 z-20">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-xs">
-              <Building2 className="w-4 h-4 text-white" />
+        {/* Top Header Bar */}
+        <div className="flex items-center justify-between px-6 py-3.5 bg-white border-b border-slate-200/80 text-slate-900 z-20">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
+              <Building2 className="w-4 h-4" />
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <h2 className="text-sm font-extrabold tracking-tight text-slate-900">
-                  List Your Property
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold tracking-tight text-slate-900">
+                  HiSpace Listing Studio
                 </h2>
-                <span className="text-[10px] font-bold px-1.5 py-0.2 bg-blue-50 text-blue-700 rounded-md border border-blue-100">
-                  POPUP
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Draft Autosaved
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 -mt-0.5">
-                Direct seller upload with video walkthrough &amp; GPS pin
+              <p className="text-[11px] text-slate-400">
+                Direct owner listing with video walkthrough &amp; pinpoint GPS coordinates
               </p>
             </div>
           </div>
 
-          {/* Close Button */}
-          <button
-            onClick={handleRequestClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
-            title="Close (Esc)"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {/* Right Action Bar */}
+          <div className="flex items-center gap-3">
+            {currentStep < 5 && (
+              <span className="hidden sm:inline-block text-xs font-semibold text-slate-400">
+                Step <strong className="text-slate-800">{currentStep}</strong> of 4
+              </span>
+            )}
+            <button
+              onClick={handleRequestClose}
+              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+              title="Close (Esc)"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Step Progress Tracker */}
-        <Stepper 
-          currentStep={currentStep} 
-          onStepClick={(s) => setCurrentStep(s)} 
-        />
+        {/* Stepper Progress Bar (Only visible during steps 1 to 4) */}
+        {currentStep <= 4 && (
+          <Stepper 
+            currentStep={currentStep} 
+            onStepClick={(s) => setCurrentStep(s)} 
+          />
+        )}
 
-        {/* Content Body: Step Screen */}
+        {/* Content Body */}
         <div className="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
           {currentStep === 1 && (
             <Step1Location
@@ -277,30 +286,30 @@ export const SellPropertyModal: React.FC = () => {
         {/* Discard Confirmation Dialog overlay */}
         {showConfirmClose && (
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white rounded-2xl p-5 max-w-sm w-full shadow-2xl border border-slate-200 text-center animate-modal-pop">
-              <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
-                <AlertTriangle className="w-5 h-5" />
+            <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center animate-modal-pop">
+              <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3.5">
+                <AlertTriangle className="w-6 h-6" />
               </div>
               <h4 className="text-sm font-bold text-slate-900 mb-1">
-                Discard In-Progress Listing?
+                Discard Listing Draft?
               </h4>
-              <p className="text-xs text-slate-500 mb-4">
-                You have unsaved changes in your property listing. Are you sure you want to close this popup?
+              <p className="text-xs text-slate-500 mb-5 leading-relaxed">
+                You have unsaved details in your property draft. If you exit now, unsubmitted changes will be reset.
               </p>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowConfirmClose(false)}
-                  className="flex-1 py-2 px-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="flex-1 py-2.5 px-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
                 >
-                  Continue Editing
+                  Keep Editing
                 </button>
                 <button
                   type="button"
                   onClick={handleForceClose}
-                  className="flex-1 py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors"
+                  className="flex-1 py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors"
                 >
-                  Discard &amp; Close
+                  Discard &amp; Exit
                 </button>
               </div>
             </div>

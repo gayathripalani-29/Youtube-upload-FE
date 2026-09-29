@@ -9,8 +9,9 @@ import {
   Play, 
   RefreshCw, 
   Film,
-  Link,
-  Sparkles
+  ExternalLink,
+  Sparkles,
+  Check
 } from 'lucide-react';
 import { SellFormData } from '../../types/property';
 
@@ -27,22 +28,49 @@ interface Step2VideoProps {
   onBack: () => void;
 }
 
+const PRESET_WALKTHROUGHS = [
+  {
+    title: 'Chennai Architectural Villa Walkthrough',
+    id: 'HS-YT-8821',
+    url: 'https://www.youtube.com/watch?v=HS-YT-8821',
+    thumb: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+    duration: '3:15',
+  },
+  {
+    title: 'Modern OMR Sea-Facing Penthouse Tour',
+    id: 'HS-YT-4412',
+    url: 'https://www.youtube.com/watch?v=HS-YT-4412',
+    thumb: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80',
+    duration: '2:45',
+  },
+  {
+    title: 'ECR Beachfront Luxury Haven Tour',
+    id: 'HS-YT-1082',
+    url: 'https://www.youtube.com/watch?v=HS-YT-1082',
+    thumb: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80',
+    duration: '4:10',
+  }
+];
+
 export const Step2Video: React.FC<Step2VideoProps> = ({
   formData,
   setFormData,
   onNext,
   onBack,
 }) => {
-  const [tab, setTab] = useState<'upload' | 'youtube'>(formData.youtubeUrlInput ? 'youtube' : 'upload');
-  const [youtubeInput, setYoutubeInput] = useState(formData.youtubeUrlInput || (formData.youtubeId ? `https://www.youtube.com/watch?v=${formData.youtubeId}` : ''));
+  const [tab, setTab] = useState<'youtube' | 'upload'>(
+    formData.youtubeUrlInput || !formData.videoFile ? 'youtube' : 'upload'
+  );
+  const [youtubeInput, setYoutubeInput] = useState(
+    formData.youtubeUrlInput || (formData.youtubeId ? `https://www.youtube.com/watch?v=${formData.youtubeId}` : '')
+  );
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(formData.videoFileName ? 100 : 0);
-  const [isCompleted, setIsCompleted] = useState(!!formData.videoFileName || !!formData.youtubeId);
   const [isDragOver, setIsDragOver] = useState(false);
 
-  // Helper to extract YouTube ID
+  // Extract YouTube ID from link or raw input
   const extractYoutubeId = (urlOrId: string): string => {
-    if (!urlOrId) return 'HS-YT-' + Math.floor(1000 + Math.random() * 9000);
+    if (!urlOrId) return 'HS-YT-8821';
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = urlOrId.match(regExp);
     return match && match[2].length === 11 ? match[2] : urlOrId.trim();
@@ -59,16 +87,26 @@ export const Step2Video: React.FC<Step2VideoProps> = ({
       ...prev,
       youtubeId: yId,
       youtubeUrlInput: youtubeInput,
-      videoFileName: `YouTube Video (${yId})`,
-      videoFileSize: 'YouTube Cloud Stream',
+      videoFileName: `YouTube Walkthrough (${yId})`,
+      videoFileSize: 'Cloud Stream',
       videoThumbnail: mockThumb,
     }));
-    setIsCompleted(true);
   };
 
-  const startSimulatedUpload = (filename = 'chennai-property-tour.mp4', size = '28.4 MB') => {
+  const handleSelectPreset = (preset: typeof PRESET_WALKTHROUGHS[0]) => {
+    setYoutubeInput(preset.url);
+    setFormData(prev => ({
+      ...prev,
+      youtubeId: preset.id,
+      youtubeUrlInput: preset.url,
+      videoFileName: preset.title,
+      videoFileSize: 'Cloud Stream',
+      videoThumbnail: preset.thumb,
+    }));
+  };
+
+  const startSimulatedUpload = (filename = 'property-walkthrough.mp4', size = '34.2 MB') => {
     setIsUploading(true);
-    setIsCompleted(false);
     setUploadProgress(0);
 
     const generatedId = 'HS-YT-' + Math.floor(1000 + Math.random() * 9000);
@@ -89,11 +127,10 @@ export const Step2Video: React.FC<Step2VideoProps> = ({
         clearInterval(interval);
         setUploadProgress(100);
         setIsUploading(false);
-        setIsCompleted(true);
       } else {
         setUploadProgress(current);
       }
-    }, 150);
+    }, 120);
   };
 
   const handleFileDrop = (e: React.DragEvent) => {
@@ -120,276 +157,252 @@ export const Step2Video: React.FC<Step2VideoProps> = ({
     }
   };
 
+  const isVideoConfigured = !!formData.youtubeId || !!formData.videoFileName;
+
   return (
-    <div className="flex-1 flex flex-col p-5 sm:p-8 max-w-2xl mx-auto w-full animate-fade-in overflow-y-auto">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50/50">
       
-      {/* Header */}
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-bold uppercase tracking-wider mb-2 border border-red-100">
-          <Film className="w-3.5 h-3.5 text-red-600" />
-          <span>Step 2 of 4 &bull; Video Tour</span>
-        </div>
-        <h3 className="text-2xl font-black text-slate-900 tracking-tight">
-          Add Property Video Tour
-        </h3>
-        <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
-          Buyers love video walkthroughs! Properties with video tours receive 4x more direct calls and inquiries.
-        </p>
-      </div>
-
-      {/* Mode Switcher Tabs */}
-      <div className="flex items-center justify-center p-1 bg-slate-100 rounded-2xl max-w-sm mx-auto mb-6 w-full">
-        <button
-          type="button"
-          onClick={() => setTab('upload')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
-            tab === 'upload'
-              ? 'bg-white text-slate-900 shadow-sm'
-              : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <UploadCloud className="w-4 h-4 text-blue-600" />
-          <span>Upload File</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('youtube')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
-            tab === 'youtube'
-              ? 'bg-white text-red-600 shadow-sm'
-              : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <YoutubeIcon className="w-4 h-4 text-red-600" />
-          <span>Paste YouTube URL</span>
-        </button>
-      </div>
-
-      {/* Tab 1: Upload Video */}
-      {tab === 'upload' && (
-        <>
-          {!isCompleted && !isUploading ? (
-            <div
-              onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-              onDragLeave={() => setIsDragOver(false)}
-              onDrop={handleFileDrop}
-              className={`relative w-full border-2 border-dashed rounded-3xl p-6 sm:p-10 text-center transition-all cursor-pointer ${
-                isDragOver 
-                  ? 'border-blue-600 bg-blue-50/50 scale-[1.01]' 
-                  : 'border-slate-200 hover:border-blue-400 bg-white hover:bg-slate-50/60 shadow-xs'
-              }`}
-            >
-              <input
-                type="file"
-                accept="video/mp4,video/quicktime,video/mkv"
-                onChange={handleFileSelect}
-                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-              />
-
-              <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
-                <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 shadow-xs">
-                  <UploadCloud className="w-7 h-7" />
-                </div>
-
-                <h4 className="text-sm font-bold text-slate-800 mb-1">
-                  Drag &amp; drop video tour here
-                </h4>
-                <p className="text-xs text-slate-500 mb-3">
-                  or <span className="text-blue-600 font-semibold underline underline-offset-2">browse files on your device</span>
-                </p>
-
-                <div className="flex items-center gap-2 text-[11px] text-slate-400 border-t border-slate-100 pt-3">
-                  <span>MP4, MOV</span>
-                  <span>&bull;</span>
-                  <span>Max 500 MB</span>
-                  <span>&bull;</span>
-                  <span>Full HD / 4K</span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => startSimulatedUpload('luxury-chennai-villa.mp4', '32.1 MB')}
-                  className="mt-5 px-3 py-1.5 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 rounded-xl text-xs font-semibold border border-slate-200 transition-colors flex items-center gap-1.5"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Use Sample Video (Demo)</span>
-                </button>
-              </div>
+      {/* Scrollable Form Body */}
+      <div className="flex-1 overflow-y-auto p-5 sm:p-8">
+        <div className="max-w-3xl mx-auto space-y-6">
+          
+          {/* Header */}
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-2 border border-blue-100/80">
+              <Film className="w-3.5 h-3.5 text-blue-600" />
+              <span>Step 2 &bull; Video Walkthrough</span>
             </div>
-          ) : isUploading ? (
-            /* Uploading state */
-            <div className="w-full bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-              <div className="flex items-center gap-3.5 mb-4">
-                <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center animate-pulse">
-                  <FileVideo className="w-5 h-5" />
-                </div>
-                <div className="flex-1 truncate">
-                  <h4 className="text-xs font-bold text-slate-900 truncate">
-                    {formData.videoFileName || 'property-tour.mp4'}
-                  </h4>
-                  <p className="text-[11px] text-slate-400">
-                    {formData.videoFileSize} &bull; Encoding to YouTube Cloud CDN...
-                  </p>
-                </div>
-                <span className="text-xs font-mono font-bold text-blue-600">
-                  {uploadProgress}%
-                </span>
-              </div>
-
-              <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mb-2">
-                <div 
-                  className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-150"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
-              <span className="text-[10px] text-slate-400 font-mono">Optimizing for map stream playback...</span>
-            </div>
-          ) : (
-            /* Uploaded Preview state */
-            <div className="w-full bg-white border border-emerald-200 rounded-3xl p-5 shadow-xs">
-              <div className="flex items-center justify-between gap-3 mb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                    <CheckCircle2 className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="text-[11px] font-bold text-emerald-700 block">
-                      Video Ready
-                    </span>
-                    <h5 className="text-xs font-bold text-slate-900 truncate max-w-xs">
-                      {formData.videoFileName}
-                    </h5>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => startSimulatedUpload('alternate-walkthrough.mp4', '29.4 MB')}
-                  className="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1 font-semibold"
-                >
-                  <RefreshCw className="w-3 h-3" />
-                  Replace
-                </button>
-              </div>
-
-              <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-900 mb-3 group">
-                <img
-                  src={formData.videoThumbnail}
-                  alt=""
-                  className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <div className="w-10 h-10 rounded-full bg-white/95 text-red-600 flex items-center justify-center shadow-lg">
-                    <Play className="w-4 h-4 fill-current ml-0.5" />
-                  </div>
-                </div>
-                <div className="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-black/75 rounded-md text-white text-[10px] font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                  <span>1080p HD Walkthrough</span>
-                </div>
-              </div>
-
-              <div className="p-2.5 bg-slate-50 rounded-xl text-[11px] text-slate-500 flex items-center justify-between">
-                <span>Video ID: <strong className="text-slate-800 font-mono">{formData.youtubeId}</strong></span>
-                <span>Size: <strong className="text-slate-800">{formData.videoFileSize}</strong></span>
-                <span className="text-emerald-600 font-bold">✓ Ready</span>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* Tab 2: YouTube URL Input */}
-      {tab === 'youtube' && (
-        <div className="space-y-4">
-          <div className="p-5 bg-white border border-slate-200 rounded-3xl shadow-xs">
-            <label className="text-xs font-bold text-slate-700 block mb-1.5 flex items-center gap-1.5">
-              <YoutubeIcon className="w-4 h-4 text-red-600" />
-              Paste YouTube Video URL or Video ID
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={youtubeInput}
-                onChange={(e) => setYoutubeInput(e.target.value)}
-                placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ or youtu.be/..."
-                className="flex-1 px-3.5 py-2 text-xs text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/10 transition-all font-mono"
-              />
-              <button
-                type="button"
-                onClick={handleApplyYoutubeUrl}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-colors"
-              >
-                Apply
-              </button>
-            </div>
-            <p className="text-[11px] text-slate-400 mt-2">
-              Supports standard YouTube links, Shorts links, or direct 11-character YouTube video IDs.
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              Add Property Video Tour
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
+              HiSpace streams video tours directly inside interactive map markers. Paste a YouTube link or upload a video file for seamless streaming playback.
             </p>
           </div>
 
-          {/* Quick Demo YouTube Links */}
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-[11px] text-slate-400 font-medium">Quick Presets:</span>
+          {/* Segmented Switcher Tabs */}
+          <div className="flex p-1 bg-slate-200/70 rounded-xl max-w-md">
             <button
               type="button"
-              onClick={() => {
-                setYoutubeInput('https://www.youtube.com/watch?v=HS-YT-8821');
-                setFormData(prev => ({
-                  ...prev,
-                  youtubeId: 'HS-YT-8821',
-                  youtubeUrlInput: 'https://www.youtube.com/watch?v=HS-YT-8821',
-                  videoFileName: 'Chennai Villa Tour (YouTube)',
-                  videoFileSize: 'Cloud Stream',
-                  videoThumbnail: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
-                }));
-                setIsCompleted(true);
-              }}
-              className="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-700 text-slate-600 rounded-lg text-[11px] font-semibold border border-slate-200 transition-colors"
+              onClick={() => setTab('youtube')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                tab === 'youtube'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
-              Villa Tour 1
+              <YoutubeIcon className="w-4 h-4 text-red-600" />
+              <span>YouTube Video</span>
             </button>
             <button
               type="button"
-              onClick={() => {
-                setYoutubeInput('https://www.youtube.com/watch?v=HS-YT-4412');
-                setFormData(prev => ({
-                  ...prev,
-                  youtubeId: 'HS-YT-4412',
-                  youtubeUrlInput: 'https://www.youtube.com/watch?v=HS-YT-4412',
-                  videoFileName: 'OMR Penthouse Walkthrough (YouTube)',
-                  videoFileSize: 'Cloud Stream',
-                  videoThumbnail: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80',
-                }));
-                setIsCompleted(true);
-              }}
-              className="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-700 text-slate-600 rounded-lg text-[11px] font-semibold border border-slate-200 transition-colors"
+              onClick={() => setTab('upload')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                tab === 'upload'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
-              Penthouse Tour 2
+              <UploadCloud className="w-4 h-4 text-blue-600" />
+              <span>Upload Video File</span>
             </button>
           </div>
 
-          {isCompleted && (
-            <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-xs">
-              <img
-                src={formData.videoThumbnail}
-                alt=""
-                className="w-full h-full object-cover opacity-90"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg">
-                  <Play className="w-5 h-5 fill-current ml-0.5" />
+          {/* YouTube Mode */}
+          {tab === 'youtube' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                    YouTube URL or Video Link
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <YoutubeIcon className="w-4 h-4 text-red-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={youtubeInput}
+                        onChange={(e) => setYoutubeInput(e.target.value)}
+                        onBlur={handleApplyYoutubeUrl}
+                        placeholder="https://www.youtube.com/watch?v=... or youtu.be/..."
+                        className="w-full pl-10 pr-4 py-2.5 text-xs text-slate-900 bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all font-mono"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleApplyYoutubeUrl}
+                      className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors"
+                    >
+                      Attach
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1.5">
+                    Supports standard YouTube video URLs, YouTube Shorts, or 11-digit video IDs.
+                  </p>
+                </div>
+
+                {/* Preset Walkthroughs */}
+                <div className="pt-2 border-t border-slate-100">
+                  <span className="text-[11px] font-bold text-slate-500 block mb-2">
+                    Select a Verified Chennai Walkthrough:
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    {PRESET_WALKTHROUGHS.map((item) => {
+                      const isSelected = formData.youtubeId === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => handleSelectPreset(item)}
+                          className={`p-2.5 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                            isSelected
+                              ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/15'
+                              : 'bg-slate-50/60 hover:bg-slate-100 border-slate-200/80'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[10px] font-bold text-blue-700">{item.duration}</span>
+                            {isSelected && <Check className="w-3.5 h-3.5 text-blue-600 stroke-[3]" />}
+                          </div>
+                          <p className="text-xs font-semibold text-slate-800 line-clamp-2">
+                            {item.title}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-              <div className="absolute top-2.5 right-2.5 px-2 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded-md">
-                YouTube ID: {formData.youtubeId}
-              </div>
+
+              {/* Video Preview Card */}
+              {isVideoConfigured && (
+                <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      Stream Configured &bull; Map Ready
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                      ID: {formData.youtubeId}
+                    </span>
+                  </div>
+
+                  <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 group">
+                    <img
+                      src={formData.videoThumbnail}
+                      alt="Walkthrough preview"
+                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-black/35 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-white/95 text-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <Play className="w-5 h-5 fill-current ml-0.5" />
+                      </div>
+                    </div>
+                    <div className="absolute bottom-2.5 left-2.5 px-2.5 py-1 bg-black/80 backdrop-blur-xs rounded-lg text-white text-[11px] font-semibold flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                      <span>1080p Interactive Walkthrough</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
-        </div>
-      )}
 
-      {/* Navigation Buttons */}
-      <div className="flex items-center justify-between w-full mt-auto pt-6 border-t border-slate-200">
+          {/* Upload File Mode */}
+          {tab === 'upload' && (
+            <div className="space-y-4">
+              {!isUploading && (
+                <div
+                  onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                  onDragLeave={() => setIsDragOver(false)}
+                  onDrop={handleFileDrop}
+                  className={`relative w-full border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all cursor-pointer ${
+                    isDragOver 
+                      ? 'border-blue-600 bg-blue-50/50 scale-[1.01]' 
+                      : 'border-slate-200 hover:border-blue-400 bg-white hover:bg-slate-50/60 shadow-xs'
+                  }`}
+                >
+                  <input
+                    type="file"
+                    accept="video/mp4,video/quicktime,video/mkv"
+                    onChange={handleFileSelect}
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  />
+
+                  <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
+                      <UploadCloud className="w-6 h-6" />
+                    </div>
+
+                    <h4 className="text-sm font-bold text-slate-800 mb-1">
+                      Choose video file or drag here
+                    </h4>
+                    <p className="text-xs text-slate-500 mb-3">
+                      MP4 or MOV format, up to 500 MB
+                    </p>
+
+                    <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                      <span>Full HD 1080p / 4K</span>
+                      <span>&bull;</span>
+                      <span>Optimized for Map Streaming</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Uploading progress card */}
+              {isUploading && (
+                <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 font-bold text-slate-800">
+                      <FileVideo className="w-4 h-4 text-blue-600 animate-pulse" />
+                      <span>{formData.videoFileName}</span>
+                    </div>
+                    <span className="font-mono text-blue-600 font-bold">{uploadProgress}%</span>
+                  </div>
+
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-blue-600 rounded-full transition-all duration-150"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    Transcoding video stream for high-speed map playback...
+                  </p>
+                </div>
+              )}
+
+              {/* Uploaded card */}
+              {!isUploading && formData.videoFileName && (
+                <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">{formData.videoFileName}</p>
+                      <p className="text-[11px] text-slate-400">{formData.videoFileSize} &bull; Ready</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => startSimulatedUpload()}
+                    className="text-xs text-slate-500 hover:text-slate-800 font-semibold flex items-center gap-1"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Replace
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* Sticky Bottom Actions */}
+      <div className="bg-white border-t border-slate-200/80 px-6 py-3.5 flex items-center justify-between z-10">
         <button
           type="button"
           onClick={onBack}
@@ -402,16 +415,15 @@ export const Step2Video: React.FC<Step2VideoProps> = ({
         <button
           type="button"
           onClick={() => {
-            if (!isCompleted) {
-              startSimulatedUpload();
-            } else {
-              onNext();
+            if (!isVideoConfigured) {
+              handleApplyYoutubeUrl();
             }
+            onNext();
           }}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 transition-all"
+          className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 hover:shadow-md transition-all"
         >
-          <span>{isCompleted ? 'Next: Details & Price' : 'Upload & Continue'}</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <span>Next: Pricing &amp; Details</span>
+          <ArrowRight className="w-4 h-4" />
         </button>
       </div>
 
