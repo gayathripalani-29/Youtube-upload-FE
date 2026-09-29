@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { 
   CheckCircle2, 
   MapPin, 
   Compass, 
   Eye, 
-  Sparkles,
-  PlusCircle,
-  X,
-  ExternalLink,
-  Copy
+  PlusCircle, 
+  Copy,
+  Check,
+  Building2,
+  ExternalLink
 } from 'lucide-react';
 import { Property } from '../../types/property';
 import { useProperties } from '../../context/PropertyContext';
@@ -28,12 +28,13 @@ export const Step5Success: React.FC<Step5SuccessProps> = ({
   onReset,
 }) => {
   const { addToast } = useProperties();
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     try {
       confetti({
-        particleCount: 90,
-        spread: 75,
+        particleCount: 80,
+        spread: 70,
         origin: { y: 0.55 },
         colors: ['#2563eb', '#38bdf8', '#10b981', '#f59e0b']
       });
@@ -44,100 +45,88 @@ export const Step5Success: React.FC<Step5SuccessProps> = ({
 
   const copyPropertyId = () => {
     navigator.clipboard?.writeText(property.id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
     addToast({
       type: 'info',
-      title: 'Copied ID',
+      title: 'Copied Listing ID',
       message: `${property.id} copied to clipboard`
     });
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-5 sm:p-8 max-w-xl mx-auto w-full text-center animate-fade-in my-auto overflow-y-auto">
+    <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-10 max-w-xl mx-auto w-full text-center overflow-y-auto">
       
-      {/* Animated Success Badge */}
-      <div className="relative mb-5">
-        <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10 ring-8 ring-emerald-500/10">
-          <CheckCircle2 className="w-9 h-9 sm:w-10 sm:h-10 stroke-[2.5]" />
-        </div>
-        <div className="absolute -bottom-1 -right-1 p-1.5 bg-blue-600 text-white rounded-xl shadow-md">
-          <Sparkles className="w-3.5 h-3.5" />
-        </div>
+      {/* Success Animated Badge */}
+      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4 ring-8 ring-emerald-500/10 shadow-sm">
+        <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 stroke-[2.5]" />
       </div>
 
       {/* Main Title & Subtitle */}
-      <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
         Property Published Live!
-      </h3>
-      <p className="text-xs text-slate-500 mt-1.5 max-w-md mx-auto leading-relaxed">
-        Your property has been successfully verified and added to the HiSpace interactive map. The video tour is now live for buyers.
+      </h2>
+      <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-md mx-auto leading-relaxed">
+        Your property has been indexed on the interactive map. Buyers searching in <strong className="text-slate-700">{property.location}</strong> can now view the listing and play the video tour.
       </p>
 
-      {/* Property Details Card */}
-      <div className="w-full bg-white border border-slate-200/90 rounded-3xl p-5 shadow-xs my-6 text-left space-y-3.5">
+      {/* Published Summary Card */}
+      <div className="w-full bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs my-6 text-left space-y-4">
         
-        <div className="grid grid-cols-3 gap-2 pb-3 border-b border-slate-100 text-xs">
+        {/* Top Reference Bar */}
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs">
           <div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-              Listing ID
+              Listing Reference
             </span>
             <button
+              type="button"
               onClick={copyPropertyId}
-              className="text-xs font-mono font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 mt-0.5"
-              title="Click to copy ID"
+              className="text-xs font-mono font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1.5 mt-0.5"
             >
               <span>{property.id}</span>
-              <Copy className="w-3 h-3 text-slate-400" />
+              {copied ? (
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+              ) : (
+                <Copy className="w-3.5 h-3.5 text-slate-400" />
+              )}
             </button>
           </div>
 
-          <div className="text-center">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-              Status
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 mt-0.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Live on Map
-            </span>
-          </div>
-
-          <div className="text-right">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-              Location
-            </span>
-            <span className="text-xs font-bold text-slate-800 truncate block mt-0.5">
-              {property.area || property.location.split(',')[0] || 'Chennai'}
-            </span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Live on Map</span>
           </div>
         </div>
 
-        {/* Thumbnail & Title snippet */}
-        <div className="flex items-center gap-3 py-1">
+        {/* Thumbnail & Property Snippet */}
+        <div className="flex items-center gap-3.5">
           <img
             src={property.thumbnail}
-            alt=""
+            alt={property.title}
             className="w-14 h-14 rounded-xl object-cover border border-slate-200 flex-shrink-0"
           />
-          <div className="flex-1 truncate">
-            <span className="text-xs font-extrabold text-blue-600 block">
+          <div className="flex-1 min-w-0">
+            <span className="text-sm font-extrabold text-slate-900 block leading-tight">
               {property.price}
             </span>
-            <h4 className="text-xs font-bold text-slate-900 truncate">
+            <p className="text-xs font-semibold text-slate-800 truncate mt-0.5">
               {property.title}
-            </h4>
+            </p>
             <p className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
-              <MapPin className="w-3 h-3 text-blue-600" />
-              {property.location}
+              <MapPin className="w-3 h-3 text-blue-600 flex-shrink-0" />
+              <span className="truncate">{property.location}</span>
             </p>
           </div>
         </div>
 
-        {/* Coordinates readout */}
-        <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs flex items-center justify-between">
-          <span className="text-slate-500 flex items-center gap-1 text-[11px]">
-            <Compass className="w-3.5 h-3.5 text-blue-600" />
-            Live Coordinates:
+        {/* Coordinates Readout */}
+        <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs flex items-center justify-between text-slate-600 font-mono text-[11px]">
+          <span className="flex items-center gap-1.5">
+            <Compass className="w-3.5 h-3.5 text-blue-600 font-sans" />
+            <span>GPS Pin:</span>
           </span>
-          <span className="font-mono font-bold text-slate-800 text-[11px]">
+          <span className="font-bold text-slate-800">
             {property.latitude.toFixed(6)}, {property.longitude.toFixed(6)}
           </span>
         </div>
@@ -149,7 +138,7 @@ export const Step5Success: React.FC<Step5SuccessProps> = ({
         <button
           type="button"
           onClick={onViewOnMap}
-          className="w-full flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/25 transition-all"
+          className="w-full flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-98 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/25 transition-all"
         >
           <Eye className="w-4 h-4" />
           <span>View Live on Map</span>
@@ -162,7 +151,7 @@ export const Step5Success: React.FC<Step5SuccessProps> = ({
             className="w-full sm:w-auto px-4 py-3 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5"
           >
             <PlusCircle className="w-4 h-4 text-slate-500" />
-            <span>Post Another</span>
+            <span>List Another</span>
           </button>
         )}
 

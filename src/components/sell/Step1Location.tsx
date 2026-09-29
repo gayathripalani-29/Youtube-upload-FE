@@ -3,12 +3,13 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { 
   MapPin, 
-  Search, 
   ArrowRight, 
   Compass, 
-  Crosshair,
+  Maximize2,
+  Navigation,
+  CheckCircle2,
   Building,
-  Check
+  Sparkles
 } from 'lucide-react';
 import { SellFormData } from '../../types/property';
 import { CHENNAI_HOTSPOTS } from '../../data/mockProperties';
@@ -30,19 +31,18 @@ export const Step1Location: React.FC<Step1LocationProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const pinMarkerRef = useRef<L.Marker | null>(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLocality, setSelectedLocality] = useState(formData.locationName || 'Anna Nagar, Chennai');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  // Initialize interactive picker map
+  const initialLat = formData.latitude || 13.0827;
+  const initialLng = formData.longitude || 80.2707;
+
+  // Initialize interactive preview map
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
-    const initialLat = formData.latitude || 13.0827;
-    const initialLng = formData.longitude || 80.2707;
-
     const map = L.map(mapContainerRef.current, {
       center: [initialLat, initialLng],
-      zoom: 14,
+      zoom: 15,
       zoomControl: false,
     });
 
@@ -53,22 +53,24 @@ export const Step1Location: React.FC<Step1LocationProps> = ({
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // Draggable Pin Icon
+    // Human-crafted Pin Icon with pulsing ring
     const pinHtml = `
-      <div class="custom-picker-pin group">
-        <div class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-xl border-2 border-white whitespace-nowrap animate-bounce">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span>Selected Location</span>
+      <div class="relative flex items-center justify-center -translate-x-1/2 -translate-y-full">
+        <div class="w-10 h-10 rounded-full bg-blue-600 border-3 border-white shadow-xl flex items-center justify-center text-white ring-4 ring-blue-500/25">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
         </div>
-        <div class="w-3.5 h-3.5 bg-blue-600 rotate-45 -mt-1.5 border-r-2 border-b-2 border-white shadow-md"></div>
+        <div class="absolute -bottom-1 w-2.5 h-2.5 bg-blue-600 rotate-45 border-r border-b border-white"></div>
       </div>
     `;
 
     const pinIcon = L.divIcon({
       html: pinHtml,
       className: '',
-      iconSize: [120, 50],
-      iconAnchor: [60, 48],
+      iconSize: [40, 48],
+      iconAnchor: [20, 48],
     });
 
     const marker = L.marker([initialLat, initialLng], {
@@ -100,9 +102,8 @@ export const Step1Location: React.FC<Step1LocationProps> = ({
     pinMarkerRef.current = marker;
     mapInstanceRef.current = map;
 
-    // Invalidate map size after modal animation completes
-    const timer1 = setTimeout(() => map.invalidateSize(), 150);
-    const timer2 = setTimeout(() => map.invalidateSize(), 400);
+    const timer1 = setTimeout(() => map.invalidateSize(), 200);
+    const timer2 = setTimeout(() => map.invalidateSize(), 500);
 
     return () => {
       clearTimeout(timer1);
@@ -114,7 +115,6 @@ export const Step1Location: React.FC<Step1LocationProps> = ({
 
   const handleSelectHotspot = (hotspot: typeof CHENNAI_HOTSPOTS[0]) => {
     const locName = `${hotspot.name}, Chennai`;
-    setSelectedLocality(locName);
     setFormData(prev => ({
       ...prev,
       latitude: Number(hotspot.lat.toFixed(6)),
@@ -128,208 +128,208 @@ export const Step1Location: React.FC<Step1LocationProps> = ({
     }
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
+  const handleNext = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!formData.locationName?.trim()) {
+      newErrors.locationName = 'Locality or neighborhood is required';
+    }
+    setErrors(newErrors);
 
-    const match = CHENNAI_HOTSPOTS.find(h => 
-      h.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    if (match) {
-      handleSelectHotspot(match);
-    } else {
-      const randomLat = 13.0827 + (Math.random() - 0.5) * 0.04;
-      const randomLng = 80.2707 + (Math.random() - 0.5) * 0.04;
-      const name = `${searchQuery}, Chennai`;
-      setSelectedLocality(name);
-      setFormData(prev => ({
-        ...prev,
-        latitude: Number(randomLat.toFixed(6)),
-        longitude: Number(randomLng.toFixed(6)),
-        locationName: name,
-      }));
-      if (mapInstanceRef.current && pinMarkerRef.current) {
-        mapInstanceRef.current.flyTo([randomLat, randomLng], 15, { duration: 0.8 });
-        pinMarkerRef.current.setLatLng([randomLat, randomLng]);
-      }
+    if (Object.keys(newErrors).length === 0) {
+      onNext();
     }
   };
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50/50">
       
-      {/* Left Form Controls */}
-      <div className="w-full lg:w-[380px] xl:w-[400px] bg-white border-r border-slate-200/80 p-5 sm:p-6 overflow-y-auto flex flex-col flex-shrink-0">
-        
-        {/* Step Title */}
-        <div className="mb-5">
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <span className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider border border-blue-100">
-              Step 1 of 4
-            </span>
-            <span className="text-xs text-slate-400 font-medium">Pin Exact Location</span>
-          </div>
-          <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">
-            Where is your property located?
-          </h3>
-          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-            Select the exact pin on the interactive map so buyers can navigate straight to your property.
-          </p>
-        </div>
-
-        {/* Search Input */}
-        <form onSubmit={handleSearchSubmit} className="mb-4">
-          <label className="text-xs font-bold text-slate-700 block mb-1">
-            Search Locality / Area
-          </label>
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="e.g. Anna Nagar, OMR, Velachery, ECR..."
-              className="w-full pl-8 pr-16 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
-            />
-            <button
-              type="submit"
-              className="absolute right-1 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold transition-colors"
-            >
-              Locate
-            </button>
-          </div>
-        </form>
-
-        {/* Quick Chennai Locality Pills */}
-        <div className="mb-4">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-            Popular Chennai Hubs
-          </span>
-          <div className="flex flex-wrap gap-1.5">
-            {CHENNAI_HOTSPOTS.slice(1, 8).map((hotspot) => {
-              const isSelected = selectedLocality.toLowerCase().includes(hotspot.name.toLowerCase());
-              return (
-                <button
-                  key={hotspot.name}
-                  type="button"
-                  onClick={() => handleSelectHotspot(hotspot)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                    isSelected
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200/80'
-                  }`}
-                >
-                  {hotspot.name}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Detailed Address Inputs */}
-        <div className="space-y-3 mb-4">
+      {/* Scrollable Container */}
+      <div className="flex-1 overflow-y-auto p-5 sm:p-8">
+        <div className="max-w-5xl mx-auto space-y-6">
+          
+          {/* Header Title */}
           <div>
-            <label className="text-xs font-bold text-slate-700 block mb-1">
-              Locality / City *
-            </label>
-            <input
-              type="text"
-              value={formData.locationName}
-              onChange={(e) => {
-                setSelectedLocality(e.target.value);
-                setFormData(prev => ({ ...prev, locationName: e.target.value }));
-              }}
-              placeholder="e.g. Anna Nagar, Chennai"
-              className="w-full px-3 py-2 text-xs text-slate-800 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">
-                Landmark / Street
-              </label>
-              <input
-                type="text"
-                value={formData.landmark}
-                onChange={(e) => setFormData(prev => ({ ...prev, landmark: e.target.value }))}
-                placeholder="Near Tower Park"
-                className="w-full px-3 py-2 text-xs text-slate-800 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">
-                Pincode
-              </label>
-              <input
-                type="text"
-                value={formData.pincode}
-                onChange={(e) => setFormData(prev => ({ ...prev, pincode: e.target.value }))}
-                placeholder="600040"
-                className="w-full px-3 py-2 text-xs text-slate-800 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all font-mono"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Live GPS Coordinates Card */}
-        <div className="p-3 bg-blue-50/70 border border-blue-100 rounded-2xl mb-4">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[11px] font-bold text-blue-900 flex items-center gap-1.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-2 border border-blue-100/80">
               <Compass className="w-3.5 h-3.5 text-blue-600" />
-              Pin GPS Coordinates
-            </span>
-            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full border border-emerald-200">
-              Live Pin
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-            <div className="bg-white p-2 rounded-xl border border-blue-100">
-              <span className="text-[10px] text-slate-400 block font-sans">Lat</span>
-              <span className="font-bold text-slate-900">{formData.latitude?.toFixed(6) || '13.082700'}</span>
+              <span>Step 1 &bull; Location Confirmation</span>
             </div>
-            <div className="bg-white p-2 rounded-xl border border-blue-100">
-              <span className="text-[10px] text-slate-400 block font-sans">Lng</span>
-              <span className="font-bold text-slate-900">{formData.longitude?.toFixed(6) || '80.270700'}</span>
-            </div>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              Confirm Property Location &amp; Address
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
+              Your map pin is locked. Verify the street address and neighborhood details so prospective buyers can discover your listing in map search.
+            </p>
           </div>
 
-          {onRepickOnMap && (
-            <button
-              type="button"
-              onClick={onRepickOnMap}
-              className="w-full mt-2.5 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-white hover:bg-blue-50 text-blue-700 text-[11px] font-bold border border-blue-200 shadow-xs transition-colors"
-            >
-              <MapPin className="w-3.5 h-3.5 text-blue-600" />
-              <span>Re-adjust Point on Main Map</span>
-            </button>
-          )}
-        </div>
+          {/* 2-Column Responsive Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* Left Form: Address Details (7 Cols) */}
+            <div className="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
+              
+              {/* Quick Area Switcher */}
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-2">
+                  Popular Chennai Neighborhoods
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {CHENNAI_HOTSPOTS.slice(1, 8).map((hotspot) => {
+                    const isSelected = formData.locationName.toLowerCase().includes(hotspot.name.toLowerCase());
+                    return (
+                      <button
+                        key={hotspot.name}
+                        type="button"
+                        onClick={() => handleSelectHotspot(hotspot)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                          isSelected
+                            ? 'bg-blue-600 text-white shadow-xs'
+                            : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80'
+                        }`}
+                      >
+                        {hotspot.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-        {/* Next Action Button */}
-        <div className="mt-auto pt-3 border-t border-slate-100">
-          <button
-            type="button"
-            onClick={onNext}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 hover:shadow-md transition-all"
-          >
-            <span>Next: Upload Video</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
+              {/* Locality Input */}
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                  Locality / Neighborhood <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={formData.locationName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, locationName: e.target.value }))}
+                    placeholder="e.g. Anna Nagar, Chennai"
+                    className={`w-full pl-10 pr-4 py-2.5 text-xs text-slate-900 bg-slate-50/70 border rounded-xl focus:bg-white focus:outline-none transition-all ${
+                      errors.locationName 
+                        ? 'border-rose-400 ring-2 ring-rose-500/10' 
+                        : 'border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10'
+                    }`}
+                  />
+                </div>
+                {errors.locationName && (
+                  <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.locationName}</p>
+                )}
+              </div>
 
+              {/* Landmark & Street Address */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                    Landmark / Street Reference
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.landmark}
+                    onChange={(e) => setFormData(prev => ({ ...prev, landmark: e.target.value }))}
+                    placeholder="e.g. Near Tower Park, 2nd Avenue"
+                    className="w-full px-3.5 py-2.5 text-xs text-slate-900 bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                    Postal Pincode
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={formData.pincode}
+                    onChange={(e) => setFormData(prev => ({ ...prev, pincode: e.target.value }))}
+                    placeholder="600040"
+                    className="w-full px-3.5 py-2.5 text-xs text-slate-900 bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Precision Tip Banner */}
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-2.5">
+                <Navigation className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Buyers use map navigation to drive directly to your property. Drag the blue pin on the preview card if you need to fine-tune the exact gate or entrance coordinates.
+                </p>
+              </div>
+
+            </div>
+
+            {/* Right Card: Interactive Pin Preview (5 Cols) */}
+            <div className="lg:col-span-5 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col gap-4">
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span className="text-xs font-bold text-slate-800">Pinpoint Map Preview</span>
+                </div>
+                <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                  Draggable
+                </span>
+              </div>
+
+              {/* Leaflet Mini Map Container */}
+              <div className="relative aspect-4/3 sm:aspect-16/10 rounded-xl overflow-hidden border border-slate-200 shadow-inner">
+                <div ref={mapContainerRef} className="w-full h-full z-0" />
+                
+                {/* Floating GPS badge */}
+                <div className="absolute top-2 left-2 z-10 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-200 text-[10px] font-mono text-slate-700 shadow-xs flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                  <span>{formData.latitude?.toFixed(5)}, {formData.longitude?.toFixed(5)}</span>
+                </div>
+              </div>
+
+              {/* Coordinates & Accuracy Details */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200/70">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">
+                    Latitude
+                  </span>
+                  <span className="font-mono font-bold text-slate-800">
+                    {formData.latitude?.toFixed(6) || '13.082700'}
+                  </span>
+                </div>
+                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200/70">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">
+                    Longitude
+                  </span>
+                  <span className="font-mono font-bold text-slate-800">
+                    {formData.longitude?.toFixed(6) || '80.270700'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Re-adjust on Full Map Shortcut */}
+              {onRepickOnMap && (
+                <button
+                  type="button"
+                  onClick={onRepickOnMap}
+                  className="w-full py-2 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  <Maximize2 className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Adjust on Full Screen Map</span>
+                </button>
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
       </div>
 
-      {/* Right Interactive Selection Map */}
-      <div className="relative flex-1 min-h-[300px] lg:min-h-full bg-slate-100 overflow-hidden">
-        <div ref={mapContainerRef} className="w-full h-full z-0" />
-
-        {/* Floating Instruction Banner on Map */}
-        <div className="absolute top-3 left-3 right-3 sm:left-auto sm:right-3 z-10 flex items-center gap-2 px-3 py-2 bg-white/95 backdrop-blur-md rounded-xl shadow-md border border-slate-200/90 text-xs font-semibold text-slate-700">
-          <Crosshair className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 animate-pulse" />
-          <span>Click map or drag the blue pin to position precisely</span>
-        </div>
+      {/* Sticky Bottom Navigation Footer */}
+      <div className="bg-white border-t border-slate-200/80 px-6 py-3.5 flex items-center justify-end z-10">
+        <button
+          type="button"
+          onClick={handleNext}
+          className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 hover:shadow-md transition-all"
+        >
+          <span>Continue to Video Walkthrough</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
       </div>
 
     </div>
