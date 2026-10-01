@@ -7,13 +7,12 @@ import {
   Plus, 
   MapPin, 
   Shield, 
-  Building2,
   Compass,
   ArrowRight
 } from 'lucide-react';
 import { useProperties } from '../context/PropertyContext';
 import { CHENNAI_HOTSPOTS } from '../data/mockProperties';
-import whiteLogo from '../assets/white-logo.png';
+import vjmLogo from '../assets/vjm-logo.jpeg';
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -64,29 +63,18 @@ export const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-3 sm:gap-6">
+        <div className="flex items-center justify-between h-16 sm:h-[72px] gap-3 sm:gap-6">
           
-          {/* Left: Brand Logo & Wordmark */}
+          {/* Left: Brand Logo */}
           <div 
             onClick={() => navigate('/')} 
-            className="flex items-center gap-3 cursor-pointer group flex-shrink-0"
+            className="flex items-center cursor-pointer group flex-shrink-0 py-1"
           >
-            <div className="h-12 px-3.5 py-1 bg-slate-950/90 hover:bg-slate-900 rounded-2xl border border-slate-800 shadow-sm flex items-center justify-center transition-all group-hover:border-amber-500/40 group-hover:scale-105">
-              <img src={whiteLogo} alt="VJM Logo" className="h-9 sm:h-10 w-auto object-contain" />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xl font-black tracking-tight text-slate-900 font-sans">
-                  VJM <span className="text-blue-600">Properties</span>
-                </span>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded-md border border-blue-100">
-                  MAP
-                </span>
-              </div>
-              <span className="text-[11px] font-medium text-slate-400 -mt-1 hidden sm:inline">
-                Verified Video Properties
-              </span>
-            </div>
+            <img 
+              src={vjmLogo} 
+              alt="VJM Properties" 
+              className="h-12 sm:h-14 md:h-[62px] w-auto object-contain mix-blend-multiply transition-transform duration-200 group-hover:scale-105" 
+            />
           </div>
 
           {/* Center: Search Bar with Autocomplete Dropdown (Hidden on Sell flow) */}
