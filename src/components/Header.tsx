@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useProperties } from '../context/PropertyContext';
 import { CHENNAI_HOTSPOTS } from '../data/mockProperties';
+import whiteLogo from '../assets/white-logo.png';
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -68,17 +69,17 @@ export const Header: React.FC = () => {
           {/* Left: Brand Logo & Wordmark */}
           <div 
             onClick={() => navigate('/')} 
-            className="flex items-center gap-2.5 cursor-pointer group flex-shrink-0"
+            className="flex items-center gap-3 cursor-pointer group flex-shrink-0"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <Building2 className="w-5 h-5 text-white" />
+            <div className="h-10 px-2.5 py-1 bg-slate-950/90 hover:bg-slate-900 rounded-xl border border-slate-800 shadow-sm flex items-center justify-center transition-all group-hover:border-amber-500/40 group-hover:scale-105">
+              <img src={whiteLogo} alt="VJM Logo" className="h-7 w-auto object-contain" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-bold tracking-tight text-slate-900 font-sans">
-                  Hi<span className="text-blue-600">Space</span>
+                <span className="text-xl font-black tracking-tight text-slate-900 font-sans">
+                  VJM <span className="text-blue-600">Properties</span>
                 </span>
-                <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded-md border border-blue-100">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded-md border border-blue-100">
                   MAP
                 </span>
               </div>

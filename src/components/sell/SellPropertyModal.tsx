@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Building2, AlertTriangle, Sparkles } from 'lucide-react';
+import whiteLogo from '../../assets/white-logo.png';
 import { Stepper } from './Stepper';
 import { Step1Location } from './Step1Location';
 import { Step2Video } from './Step2Video';
@@ -187,13 +188,13 @@ export const SellPropertyModal: React.FC = () => {
         {/* Top Header Bar */}
         <div className="flex items-center justify-between px-6 py-3.5 bg-white border-b border-slate-200/80 text-slate-900 z-20">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
-              <Building2 className="w-4 h-4" />
+            <div className="h-9 px-2.5 py-1 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center shadow-xs">
+              <img src={whiteLogo} alt="VJM Logo" className="h-6 w-auto object-contain" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-bold tracking-tight text-slate-900">
-                  HiSpace Listing Studio
+                  VJM Listing Studio
                 </h2>
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-semibold">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>

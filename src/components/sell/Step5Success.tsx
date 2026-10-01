@@ -36,7 +36,7 @@ export const Step5Success: React.FC<Step5SuccessProps> = ({
         particleCount: 80,
         spread: 70,
         origin: { y: 0.55 },
-        colors: ['#2563eb', '#38bdf8', '#10b981', '#f59e0b']
+        colors: ['#ab2c30', '#fbaf2e', '#10b981', '#f59e0b', '#74191c']
       });
     } catch {
       // Safe fallback
