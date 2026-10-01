@@ -13,6 +13,7 @@ import {
   Phone
 } from 'lucide-react';
 import { useProperties } from '../context/PropertyContext';
+import whiteLogo from '../assets/white-logo.png';
 
 export const VideoModal: React.FC = () => {
   const { activeVideoProperty, setActiveVideoProperty, addToast } = useProperties();
@@ -87,10 +88,11 @@ export const VideoModal: React.FC = () => {
             </button>
           )}
 
-          {/* YouTube Watermark Logo (Top Right) */}
-          <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-lg border border-white/10 text-white text-xs font-semibold">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            <span>HiSpace Video Tour</span>
+          {/* Watermark Logo (Top Right) */}
+          <div className="absolute top-4 right-4 z-20 flex items-center gap-2 px-3 py-1.5 bg-black/75 backdrop-blur-md rounded-xl border border-white/15 text-white text-xs font-semibold shadow-lg">
+            <img src={whiteLogo} alt="VJM" className="h-5 w-auto object-contain" />
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span>VJM Verified Tour</span>
           </div>
 
           {/* Player Custom Controls Overlay (Bottom) */}

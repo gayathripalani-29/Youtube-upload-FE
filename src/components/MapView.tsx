@@ -4,11 +4,11 @@ import 'leaflet/dist/leaflet.css';
 import { useProperties } from '../context/PropertyContext';
 import { Property } from '../types/property';
 import { CHENNAI_HOTSPOTS } from '../data/mockProperties';
-import { 
-  Compass, 
-  MapPin, 
-  Maximize2, 
-  Minimize2, 
+import {
+  Compass,
+  MapPin,
+  Maximize2,
+  Minimize2,
   RotateCcw,
   Video,
   Check,
@@ -24,11 +24,11 @@ export const MapView: React.FC = () => {
   const markerLayerGroupRef = useRef<L.LayerGroup | null>(null);
   const pickerMarkerRef = useRef<L.Marker | null>(null);
 
-  const { 
-    filteredProperties, 
-    selectedProperty, 
-    setSelectedProperty, 
-    mapCenter, 
+  const {
+    filteredProperties,
+    selectedProperty,
+    setSelectedProperty,
+    mapCenter,
     mapZoom,
     setMapCenterAndZoom,
     newlyAddedPropertyId,
@@ -167,8 +167,8 @@ export const MapView: React.FC = () => {
 
       const beaconColor = isNewlyAdded ? 'beacon-emerald' : 'beacon-blue';
       const beaconMode = (isNewlyAdded || isSelected) ? 'beacon-always' : 'beacon-on-hover';
-      const dotPingColor = isNewlyAdded ? 'bg-emerald-300' : 'bg-sky-300';
-      const dotCoreColor = isNewlyAdded ? 'bg-emerald-200' : 'bg-white';
+      const dotPingColor = isNewlyAdded ? 'bg-emerald-300' : 'bg-amber-300';
+      const dotCoreColor = isNewlyAdded ? 'bg-emerald-200' : 'bg-amber-400';
       const isPingActive = isNewlyAdded || isSelected;
 
       const markerHtml = `
@@ -373,21 +373,19 @@ export const MapView: React.FC = () => {
           <div className="hidden sm:flex items-center bg-white/90 backdrop-blur-md rounded-2xl shadow-elevated border border-slate-200/80 p-1 text-xs">
             <button
               onClick={() => setMapStyle('streets')}
-              className={`px-2.5 py-1 rounded-xl font-medium transition-all ${
-                mapStyle === 'streets' 
-                  ? 'bg-blue-600 text-white shadow-sm' 
+              className={`px-2.5 py-1 rounded-xl font-medium transition-all ${mapStyle === 'streets'
+                  ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
-              }`}
+                }`}
             >
               Streets
             </button>
             <button
               onClick={() => setMapStyle('satellite')}
-              className={`px-2.5 py-1 rounded-xl font-medium transition-all ${
-                mapStyle === 'satellite' 
-                  ? 'bg-blue-600 text-white shadow-sm' 
+              className={`px-2.5 py-1 rounded-xl font-medium transition-all ${mapStyle === 'satellite'
+                  ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
-              }`}
+                }`}
             >
               Satellite
             </button>
@@ -438,7 +436,7 @@ export const MapView: React.FC = () => {
       {isPickingLocation && (
         <div className="absolute top-4 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 z-30 max-w-xl w-auto sm:w-full animate-modal-pop">
           <div className="bg-white/95 backdrop-blur-xl border border-blue-200 shadow-2xl rounded-3xl p-4 sm:p-5 flex flex-col gap-3 ring-4 ring-blue-500/15">
-            
+
             {/* Header info */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">

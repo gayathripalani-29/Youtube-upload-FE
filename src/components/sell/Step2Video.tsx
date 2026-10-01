@@ -176,7 +176,7 @@ export const Step2Video: React.FC<Step2VideoProps> = ({
               Add Property Video Tour
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
-              HiSpace streams video tours directly inside interactive map markers. Paste a YouTube link or upload a video file for seamless streaming playback.
+              VJM streams video tours directly inside interactive map markers. Paste a YouTube link or upload a video file for seamless streaming playback.
             </p>
           </div>
 
