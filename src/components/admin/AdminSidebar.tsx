@@ -47,8 +47,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       {/* Brand Header */}
       <div className="p-4 border-b border-slate-800 flex items-center justify-between">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-          <div className="h-10 px-2.5 py-1 bg-slate-950/80 rounded-xl border border-slate-800 flex items-center justify-center shadow-sm">
-            <img src={whiteLogo} alt="VJM Logo" className="h-7 w-auto object-contain" />
+          <div className="h-11 px-3 py-1 bg-slate-950/80 rounded-xl border border-slate-800 flex items-center justify-center shadow-sm">
+            <img src={whiteLogo} alt="VJM Logo" className="h-8 w-auto object-contain" />
           </div>
           <div>
             <h2 className="text-sm font-bold text-white tracking-tight">VJM Console</h2>

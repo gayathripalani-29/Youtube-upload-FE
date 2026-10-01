@@ -71,8 +71,8 @@ export const Header: React.FC = () => {
             onClick={() => navigate('/')} 
             className="flex items-center gap-3 cursor-pointer group flex-shrink-0"
           >
-            <div className="h-10 px-2.5 py-1 bg-slate-950/90 hover:bg-slate-900 rounded-xl border border-slate-800 shadow-sm flex items-center justify-center transition-all group-hover:border-amber-500/40 group-hover:scale-105">
-              <img src={whiteLogo} alt="VJM Logo" className="h-7 w-auto object-contain" />
+            <div className="h-12 px-3.5 py-1 bg-slate-950/90 hover:bg-slate-900 rounded-2xl border border-slate-800 shadow-sm flex items-center justify-center transition-all group-hover:border-amber-500/40 group-hover:scale-105">
+              <img src={whiteLogo} alt="VJM Logo" className="h-9 sm:h-10 w-auto object-contain" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
